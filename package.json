@@ -1,0 +1,15 @@
+{
+  "name": "airquality",
+  "version": "1.0.0",
+  "description": "",
+  "main": "check_serialport.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lex",
+  "license": "MIT"
+}
