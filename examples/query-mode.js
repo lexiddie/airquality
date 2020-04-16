@@ -1,6 +1,10 @@
+require('dotenv-flow').config();
+console.log(process.env);
+const port = process.env.AIR_SENSOR_PORT;
+console.log(`Checking the port ${port}`);
 const Sensor = require('../wrapper.js');
 
-const sensor = new Sensor('COM5'); // Use your system path of SDS011 sensor.
+const sensor = new Sensor(port); // Use your system path of SDS011 sensor.
 
 sensor
   .setReportingMode('query')
@@ -17,7 +21,7 @@ sensor
 
       // Data will be received only when requested.
       // Keep in mind that sensor (laser & fan) is still continuously working because working period is set to 0.
-      sensor.query().then(data => {
+      sensor.query().then((data) => {
         console.log(`Received: ` + JSON.stringify(data));
       });
     }, 1000);
