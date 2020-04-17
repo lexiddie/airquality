@@ -63,17 +63,30 @@ function startSensor(isActive, sensorPort) {
         // Since working period was set to 0 and mode was set to active, this event will be emitted as soon as new data is received.
         sensor.on('measure', (data) => {
           const userKey = database.ref().child('particles').push().key;
-          const currentDateTime = new Date().toISOString();
+          var today = new Date();
+          var date =
+            today.getFullYear() +
+            '-' +
+            (today.getMonth() + 1) +
+            '-' +
+            today.getDate();
+          var time =
+            today.getHours() +
+            ':' +
+            today.getMinutes() +
+            ':' +
+            today.getSeconds();
+          var dateTime = date + ' ' + time;
           const firebaseModel = {
-            Id: userKey,
-            Date: currentDateTime,
+            id: userKey,
+            dateTime: dateTime,
             pm25: data['PM2.5'],
             pm10: data['PM10'],
           };
           console.log(`Adding Data`, firebaseModel);
           database.ref().child('particles').child(userKey).set(firebaseModel);
           console.log(`This is active sensor`);
-          console.log(`[${currentDateTime}] ${JSON.stringify(data)}`);
+          console.log(`[${dateTime}] ${JSON.stringify(data)}`);
         });
       });
   } else {
@@ -94,10 +107,23 @@ function startSensor(isActive, sensorPort) {
           // Keep in mind that sensor (laser & fan) is still continuously working because working period is set to 0.
           sensor.query().then((data) => {
             const userKey = database.ref().child('particles').push().key;
-            const currentDateTime = new Date().toISOString();
+            var today = new Date();
+            var date =
+              today.getFullYear() +
+              '-' +
+              (today.getMonth() + 1) +
+              '-' +
+              today.getDate();
+            var time =
+              today.getHours() +
+              ':' +
+              today.getMinutes() +
+              ':' +
+              today.getSeconds();
+            var dateTime = date + ' ' + time;
             const firebaseModel = {
-              Id: userKey,
-              Date: currentDateTime,
+              id: userKey,
+              dateTime: dateTime,
               pm25: data['PM2.5'],
               pm10: data['PM10'],
             };
