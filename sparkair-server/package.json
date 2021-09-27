@@ -1,0 +1,17 @@
+{
+  "name": "sparkair-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/src/index.js",
+  "author": "Lex",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "firebase": "^8.10.0",
+    "serialport": "^9.2.3"
+  }
+}
