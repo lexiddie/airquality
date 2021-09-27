@@ -1,10 +1,6 @@
-require('dotenv-flow').config();
-console.log(process.env);
-const port = process.env.AIR_SENSOR_PORT;
-console.log(`Checking the port ${port}`);
 const Sensor = require('../wrapper.js');
 
-const sensor = new Sensor(port); // Use your system path of SDS011 sensor.
+const sensor = new Sensor('COM5'); // Use your system path of SDS011 sensor.
 
 sensor
   .setReportingMode('query')

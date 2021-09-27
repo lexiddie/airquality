@@ -1,29 +1,33 @@
-require('dotenv-flow').config();
-var express = require('express');
-var app = express();
+require('dotenv').config();
+const express = require('express');
+const app = express();
 const SerialPort = require('serialport');
-const Sensor = require('./wrapper');
-var firebase = require('firebase/app');
+const Sensor = require('./sds011/wrapper');
+const firebase = require('firebase/app');
+
 // Add the Firebase products that you want to use
 require('firebase/app');
 require('firebase/database');
 require('firebase/auth');
 require('firebase/analytics');
 require('firebase/firestore');
+
 var port = normalizePort(process.env.PORT || '3030');
 
+// You have to include the your Firebase Configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDUEAa3CtD7sh0YjxfEPohJBDfxN0V74VQ',
-  authDomain: 'airquality-92f14.firebaseapp.com',
-  databaseURL: 'https://airquality-92f14.firebaseio.com',
-  projectId: 'airquality-92f14',
-  storageBucket: 'airquality-92f14.appspot.com',
-  messagingSenderId: '479750944181',
-  appId: '1:479750944181:web:f1ed78c465774d07dad5fc',
-  measurementId: 'G-BQQXG7WFNR',
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  databaseURL: process.env.DB_URL,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
 const database = firebase.database();
 const checkValue = process.env.IS_ACTIVE;
 console.log(`Checking The Sensor Active Type: ${checkValue}`);
@@ -31,6 +35,8 @@ console.log(`Checking The Sensor Active Type: ${checkValue}`);
 SerialPort.list().then((ports) => {
   ports.forEach(function (port) {
     console.log(port);
+    // My SDS011 Device's VendorID = 1A86 and ProductID = 7523
+    // I have to specific and indicate the hardware series because my port selection will be done automatically
     if (port['vendorId'] === '1a86' && port['productId'] === '7523') {
       console.log(port);
       console.log(`Checking Device Port Path ${port['path']}`);
@@ -40,11 +46,11 @@ SerialPort.list().then((ports) => {
 });
 
 app.get('/', function (req, res) {
-  res.send('Air Quality Detection System');
+  res.send('Air Quality Monitoring System');
 });
 
 app.listen(port, function () {
-  console.log('App listening on port 8081!');
+  console.log('App listening on port 3030!');
 });
 
 function startSensor(isActive, sensorPort) {
@@ -63,25 +69,15 @@ function startSensor(isActive, sensorPort) {
         // Since working period was set to 0 and mode was set to active, this event will be emitted as soon as new data is received.
         sensor.on('measure', (data) => {
           const userKey = database.ref().child('particles').push().key;
-          var today = new Date();
-          var date =
-            today.getFullYear() +
-            '-' +
-            (today.getMonth() + 1) +
-            '-' +
-            today.getDate();
-          var time =
-            today.getHours() +
-            ':' +
-            today.getMinutes() +
-            ':' +
-            today.getSeconds();
-          var dateTime = date + ' ' + time;
+          const today = new Date();
+          const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+          const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
+          const dateTime = date + ' ' + time;
           const firebaseModel = {
             id: userKey,
             dateTime: dateTime,
             pm25: data['PM2.5'],
-            pm10: data['PM10'],
+            pm10: data['PM10']
           };
           console.log(`Adding Data`, firebaseModel);
           database.ref().child('particles').child(userKey).set(firebaseModel);
@@ -107,25 +103,15 @@ function startSensor(isActive, sensorPort) {
           // Keep in mind that sensor (laser & fan) is still continuously working because working period is set to 0.
           sensor.query().then((data) => {
             const userKey = database.ref().child('particles').push().key;
-            var today = new Date();
-            var date =
-              today.getFullYear() +
-              '-' +
-              (today.getMonth() + 1) +
-              '-' +
-              today.getDate();
-            var time =
-              today.getHours() +
-              ':' +
-              today.getMinutes() +
-              ':' +
-              today.getSeconds();
-            var dateTime = date + ' ' + time;
+            const today = new Date();
+            const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
+            const dateTime = date + ' ' + time;
             const firebaseModel = {
               id: userKey,
               dateTime: dateTime,
               pm25: data['PM2.5'],
-              pm10: data['PM10'],
+              pm10: data['PM10']
             };
             console.log(`Adding Data`, firebaseModel);
             database.ref().child('particles').child(userKey).set(firebaseModel);

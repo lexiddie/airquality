@@ -4,8 +4,7 @@ const EventEmitter = require('events');
 const SensorState = require('./core/sensor-state.js');
 const SensorCommand = require('./core/sensor-command.js');
 
-const addChecksumToCommandArray = require('./core/packet-utils.js')
-  .addChecksumToCommandArray;
+const addChecksumToCommandArray = require('./core/packet-utils.js').addChecksumToCommandArray;
 const verifyPacket = require('./core/packet-utils.js').verifyPacket;
 
 const PacketHandlers = require('./core/packet-handlers.js');
@@ -52,7 +51,7 @@ class SDS011Wrapper extends EventEmitter {
             if (this._state.mode == 'active')
               this.emit('measure', {
                 'PM2.5': this._state.pm2p5,
-                PM10: this._state.pm10,
+                PM10: this._state.pm10
               });
             break;
 
@@ -102,67 +101,40 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     const prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        4,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command));
     }
 
     const executeContext = {
-      port: port,
+      port: port
     };
 
     function isFullfilled() {
       return this.state.pm2p5 !== undefined && this.state.pm10 !== undefined;
     }
     const isFullfilledContext = {
-      state: state,
+      state: state
     };
 
     return new Promise((resolve, reject, onCancel) => {
       function resolveWithReadings() {
         resolve({
           'PM2.5': this.state.pm2p5,
-          PM10: this.state.pm10,
+          PM10: this.state.pm10
         });
       }
 
       const resolveContext = {
-        state: state,
+        state: state
       };
 
-      const command = new SensorCommand(
-        port,
-        resolveWithReadings.bind(resolveContext),
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolveWithReadings.bind(resolveContext), reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
@@ -185,31 +157,11 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     const prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        2,
-        1,
-        this.mode === 'active' ? 0 : 1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 2, 1, this.mode === 'active' ? 0 : 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command));
@@ -217,7 +169,7 @@ class SDS011Wrapper extends EventEmitter {
 
     const executeContext = {
       port: port,
-      mode: mode,
+      mode: mode
     };
 
     function isFullfilled() {
@@ -225,18 +177,11 @@ class SDS011Wrapper extends EventEmitter {
     }
     const isFullfilledContext = {
       state: this._state,
-      setMode: mode,
+      setMode: mode
     };
 
     return new Promise((resolve, reject, onCancel) => {
-      const command = new SensorCommand(
-        port,
-        resolve,
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolve, reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
@@ -255,45 +200,25 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     const prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command));
     }
 
     const executeContext = {
-      port: port,
+      port: port
     };
 
     function isFullfilled() {
       return this.state.mode != undefined;
     }
     const isFullfilledContext = {
-      state: this._state,
+      state: this._state
     };
 
     return new Promise((resolve, reject, onCancel) => {
@@ -302,17 +227,10 @@ class SDS011Wrapper extends EventEmitter {
       }
 
       const resolveContext = {
-        state: state,
+        state: state
       };
 
-      const command = new SensorCommand(
-        port,
-        resolveWithMode.bind(resolveContext),
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolveWithMode.bind(resolveContext), reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
@@ -333,31 +251,11 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     const prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        6,
-        1,
-        shouldSleep ? 0 : 1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 6, 1, shouldSleep ? 0 : 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command));
@@ -365,7 +263,7 @@ class SDS011Wrapper extends EventEmitter {
 
     const executeContext = {
       port: port,
-      shouldSleep: shouldSleep,
+      shouldSleep: shouldSleep
     };
 
     function isFullfilled() {
@@ -373,18 +271,11 @@ class SDS011Wrapper extends EventEmitter {
     }
     const isFullfilledContext = {
       state: this._state,
-      shouldSleep: shouldSleep,
+      shouldSleep: shouldSleep
     };
 
     return new Promise((resolve, reject, onCancel) => {
-      const command = new SensorCommand(
-        port,
-        resolve,
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolve, reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
@@ -403,45 +294,25 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     const prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        7,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command));
     }
 
     const executeContext = {
-      port: port,
+      port: port
     };
 
     function isFullfilled() {
       return this.state.firmware !== undefined;
     }
     const isFullfilledContext = {
-      state: this._state,
+      state: this._state
     };
 
     return new Promise((resolve, reject, onCancel) => {
@@ -450,7 +321,7 @@ class SDS011Wrapper extends EventEmitter {
       }
 
       const resolveContext = {
-        state: state,
+        state: state
       };
 
       const command = new SensorCommand(
@@ -483,31 +354,11 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     var prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        8,
-        1,
-        this.time,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 8, 1, this.time, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
 
@@ -516,7 +367,7 @@ class SDS011Wrapper extends EventEmitter {
 
     var executeContext = {
       port: port,
-      time: time,
+      time: time
     };
 
     function isFullfilled() {
@@ -524,18 +375,11 @@ class SDS011Wrapper extends EventEmitter {
     }
     var isFullfilledContext = {
       state: this._state,
-      setPeriod: time,
+      setPeriod: time
     };
 
     return new Promise((resolve, reject, onCancel) => {
-      const command = new SensorCommand(
-        port,
-        resolve,
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolve, reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
@@ -554,45 +398,25 @@ class SDS011Wrapper extends EventEmitter {
     }
 
     var prepareContext = {
-      state: state,
+      state: state
     };
 
     function execute() {
-      var command = [
-        0xaa,
-        0xb4,
-        8,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0xff,
-        0xff,
-        0,
-        0xab,
-      ];
+      var command = [0xaa, 0xb4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0xab];
 
       addChecksumToCommandArray(command);
       this.port.write(Buffer.from(command)); // Send the command to the sensor
     }
 
     var executeContext = {
-      port: port,
+      port: port
     };
 
     function isFullfilled() {
       return this.state.workingPeriod !== undefined;
     }
     var isFullfilledContext = {
-      state: this._state,
+      state: this._state
     };
 
     return new Promise((resolve, reject, onCancel) => {
@@ -601,24 +425,16 @@ class SDS011Wrapper extends EventEmitter {
       }
 
       const resolveContext = {
-        state: state,
+        state: state
       };
 
-      const command = new SensorCommand(
-        port,
-        resolveWithTime.bind(resolveContext),
-        reject,
-        prepare.bind(prepareContext),
-        execute.bind(executeContext),
-        isFullfilled.bind(isFullfilledContext)
-      );
+      const command = new SensorCommand(port, resolveWithTime.bind(resolveContext), reject, prepare.bind(prepareContext), execute.bind(executeContext), isFullfilled.bind(isFullfilledContext));
       this._enqueueCommand(command);
     });
   }
 
   _enqueueCommand(command) {
-    if (command.constructor.name !== 'SensorCommand')
-      throw new Error('Argument of type "SensorCommand" is required.');
+    if (command.constructor.name !== 'SensorCommand') throw new Error('Argument of type "SensorCommand" is required.');
 
     this._commandQueue.push(command);
 
